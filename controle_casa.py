@@ -8,10 +8,16 @@ MORADORES = ["Eduardo", "Patricia", "Jefferson"]
 st.set_page_config(page_title="Controle Doméstico", page_icon="🏠", layout="centered")
 
 def carregar_dados():
-    """Lê o arquivo de dados. Se não existir, cria um DataFrame vazio."""
+    """Lê o arquivo de dados. Se não existir ou estiver vazio, cria um DataFrame vazio."""
     if os.path.exists(ARQUIVO_DADOS):
-        return pd.read_csv(ARQUIVO_DADOS)
+        try:
+            # Tenta ler. Se o arquivo existir mas estiver vazio, o Pandas gera o erro.
+            return pd.read_csv(ARQUIVO_DADOS)
+        except pd.errors.EmptyDataError:
+            # Se der erro de "No columns to parse", retorna um DataFrame vazio.
+            return pd.DataFrame(columns=["ID", "Data", "Pagador", "Descricao", "Valor"])
     else:
+        # Se o arquivo nem existir, retorna um DataFrame vazio
         return pd.DataFrame(columns=["ID", "Data", "Pagador", "Descricao", "Valor"])
 
 def salvar_dados(df):
